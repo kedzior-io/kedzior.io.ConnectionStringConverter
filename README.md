@@ -2,9 +2,7 @@
 
 Kedzior.io.ConnectionStringConverter is a library that simply converts non-standard MySQL connection string to standard one. Useful when using MySQL with asp.net core apps on Azure.
 
-[![Build status](https://ci.appveyor.com/api/github/webhook?id=t9a89lywnuu1sj1r/branch/master?svg=true)](https://ci.appveyor.com/project/kedzior-io/kedzior-io-connectionstringconverter/branch/master)
-
-
+[![Build status](https://ci.appveyor.com/api/projects/status/5q67ofysn8n5nrjx/branch/master?svg=true)](https://ci.appveyor.com/project/kedzior-io/kedzior-io-connectionstringconverter/branch/master)
 
 ## Install
 
