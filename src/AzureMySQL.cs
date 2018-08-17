@@ -16,7 +16,7 @@ namespace kedzior.io.ConnectionStringConverter
         /// <returns>Standard connection string.</returns>
         public static string ToMySQLStandard(this string str)
         {
-            if (string.IsNullOrEmpty(str))
+            if (string.IsNullOrWhiteSpace(str))
                 throw new ArgumentException("Connection String is empty.");
 
             string[] t = str.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -24,7 +24,6 @@ namespace kedzior.io.ConnectionStringConverter
             Dictionary<string, string> dictionary = t.Select(item => item.Split('=')).ToDictionary(s => s[0], s => s[1]);
 
             dictionary.ExtractPort("Data Source", ":", "Port");
-
             dictionary.ReplaceKey("Data Source", "Server");
             dictionary.ReplaceKey("User Id", "Uid");
             dictionary.ReplaceKey("Password", "Pwd");
@@ -42,9 +41,6 @@ namespace kedzior.io.ConnectionStringConverter
         /// <returns>Modified dictionary</returns>
         private static Dictionary<string, string> ExtractPort(this Dictionary<string, string> source, string serverKey, string portSeparator, string portKey)
         {
-            if (source == null)
-                throw new ArgumentException("Parameter source can not be null.");
-
             if (source.ContainsKey(serverKey))
             {
                 string portNumber = source[serverKey].Substring(source[serverKey].LastIndexOf(portSeparator) + 1);
@@ -71,9 +67,6 @@ namespace kedzior.io.ConnectionStringConverter
         /// <returns>Modified dictionary.</returns>
         private static Dictionary<string, string> ReplaceKey(this Dictionary<string, string> source, string oldKey, string newKey)
         {
-            if (source == null)
-                throw new ArgumentException("Parameter source can not be null.");
-
             if (source.ContainsKey(oldKey))
             {
                 source.Add(newKey, source[oldKey]);
@@ -91,9 +84,6 @@ namespace kedzior.io.ConnectionStringConverter
         /// <returns>Dictionary as string</returns>
         private static string ToString(this Dictionary<string, string> source, string keyValueSeparator, string sequenceSeparator)
         {
-            if (source == null)
-                throw new ArgumentException("Parameter source can not be null.");
-
             var pairs = source.OrderBy(x => x.Key).Select(x => string.Format("{0}{1}{2}", x.Key, keyValueSeparator, x.Value));
 
             return string.Join(sequenceSeparator, pairs);

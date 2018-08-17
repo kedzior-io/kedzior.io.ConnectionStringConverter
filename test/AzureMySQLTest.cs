@@ -61,9 +61,9 @@ namespace kedzior.io.ConnectionStringConverter.Tests
         }
 
         [Fact]
-        public void ToMySQLStandard_ConnStringEmpt_ThrowsArgumentException()
+        public void ToMySQLStandard_ConnStringWhiteSpace_ThrowsArgumentException()
         {
-            string inputCS = null;
+            string inputCS = " ";
             var expectedMessage = "Connection String is empty.";
 
             var exception = Assert.Throws<ArgumentException>(() => inputCS.ToMySQLStandard());

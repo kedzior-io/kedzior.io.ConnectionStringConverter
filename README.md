@@ -2,6 +2,10 @@
 
 Kedzior.io.ConnectionStringConverter is a library that simply converts non-standard MySQL connection string to standard one. Useful when using MySQL with asp.net core apps on Azure.
 
+[![Build status](https://ci.appveyor.com/api/github/webhook?id=t9a89lywnuu1sj1r/branch/master?svg=true)](https://ci.appveyor.com/project/kedzior-io/kedzior-io-connectionstringconverter/branch/master)
+
+
+
 ## Install
 
 Package Manager:
@@ -19,8 +23,8 @@ dotnet add package kedzior.io.ConnectionStringConverter
 Use it in `Startup.cs`
 
 ```csharp
-string connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
-	services.AddDbContext<ApplicationDbContext>(options =>  
-		options.UseMySql(connectionString.ToMySQLStandard())
-	);
+	string connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
+		services.AddDbContext<ApplicationDbContext>(options =>  
+			options.UseMySql(connectionString.ToMySQLStandard())
+		);
 ```
