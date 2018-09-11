@@ -14,7 +14,7 @@ namespace kedzior.io.ConnectionStringConverter
         /// </summary>
         /// <param name="str">Non-standard connection string.</param>
         /// <returns>Standard connection string.</returns>
-        public static string ToMySQLStandard(this string str)
+        public static string ToMySQLStandard(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
                 throw new ArgumentException("Connection String is empty.");

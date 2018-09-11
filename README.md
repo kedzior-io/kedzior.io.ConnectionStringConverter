@@ -23,6 +23,6 @@ Use it in `Startup.cs`
 ```csharp
 	string connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
 		services.AddDbContext<ApplicationDbContext>(options =>  
-			options.UseMySql(connectionString.ToMySQLStandard())
+			options.UseMySql(AzureMySQL.ToMySQLStandard(connectionString))
 		);
 ```

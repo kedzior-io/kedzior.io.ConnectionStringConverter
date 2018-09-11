@@ -11,7 +11,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             var inputCS = "Database=localdb;Data Source=127.0.0.1:54068;User Id=azure;Password=kedzior";
             var expectedCS = "Database=localdb;Port=54068;Pwd=kedzior;Server=127.0.0.1;Uid=azure";
 
-            var actualCS = inputCS.ToMySQLStandard();
+            var actualCS = AzureMySQL.ToMySQLStandard(inputCS);
 
             Assert.Equal(expectedCS, actualCS);
         }
@@ -22,7 +22,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             var inputCS = "Data Source=127.0.0.1:54068;Database=localdb;Password=kedzior;User Id=azure";
             var expectedCS = "Database=localdb;Port=54068;Pwd=kedzior;Server=127.0.0.1;Uid=azure";
 
-            var actualCS = inputCS.ToMySQLStandard();
+            var actualCS = AzureMySQL.ToMySQLStandard(inputCS);
 
             Assert.Equal(expectedCS, actualCS);
         }
@@ -33,7 +33,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             var inputCS = "Data Source=127.0.0.1;Database=localdb;Password=kedzior;User Id=azure";
             var expectedCS = "Database=localdb;Port=3306;Pwd=kedzior;Server=127.0.0.1;Uid=azure";
 
-            var actualCS = inputCS.ToMySQLStandard();
+            var actualCS = AzureMySQL.ToMySQLStandard(inputCS);
 
             Assert.Equal(expectedCS, actualCS);
         }
@@ -44,7 +44,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             var inputCS = "Data Source=127.0.0.1;Port=3306;Database=localdb;Password=kedzior;User Id=azure";
             var expectedCS = "Database=localdb;Port=3306;Pwd=kedzior;Server=127.0.0.1;Uid=azure";
 
-            var actualCS = inputCS.ToMySQLStandard();
+            var actualCS = AzureMySQL.ToMySQLStandard(inputCS);
 
             Assert.Equal(expectedCS, actualCS);
         }
@@ -56,7 +56,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             var inputCS = "";
             var expectedMessage = "Connection String is empty.";
 
-            var exception = Assert.Throws<ArgumentException>(() => inputCS.ToMySQLStandard());
+            var exception = Assert.Throws<ArgumentException>(() => AzureMySQL.ToMySQLStandard(inputCS));
             Assert.Equal(expectedMessage, exception.Message);
         }
 
@@ -66,7 +66,7 @@ namespace kedzior.io.ConnectionStringConverter.Tests
             string inputCS = " ";
             var expectedMessage = "Connection String is empty.";
 
-            var exception = Assert.Throws<ArgumentException>(() => inputCS.ToMySQLStandard());
+            var exception = Assert.Throws<ArgumentException>(() => AzureMySQL.ToMySQLStandard(inputCS));
             Assert.Equal(expectedMessage, exception.Message);
         }
     }
