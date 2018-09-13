@@ -33,4 +33,3 @@ for:
       secure: tOQ2rz+MUX9sYoE/eJC6jlVNgj9qTNahGVvLYAVMX+si9Hr4/0IzCHEKWvtNMtli
     on:
       branch: master
-      appveyor_repo_tag: true
