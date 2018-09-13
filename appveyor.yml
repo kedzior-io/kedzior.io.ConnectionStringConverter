@@ -9,8 +9,11 @@ branches:
   - master
 nuget:  
   disable_publish_on_pr: true
+environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
 build_script:  
 - ps: .\build.ps1
+- sh: ./build.sh
 test: off  
 artifacts:  
 - path: .\artifacts\**\*.nupkg
