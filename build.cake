@@ -1,83 +1,94 @@
-// Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
-var configuration = Argument("Configuration", "Release");
+var configuration =
+    HasArgument("Configuration") ? Argument<string>("Configuration") :
+    EnvironmentVariable("Configuration") != null ? EnvironmentVariable("Configuration") :
+    "Release";
+var preReleaseSuffix = "";
+    // HasArgument("PreReleaseSuffix") ? Argument<string>("PreReleaseSuffix") :
+    // (AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag) ? null :
+    // EnvironmentVariable("PreReleaseSuffix") != null ? EnvironmentVariable("PreReleaseSuffix") :
+    // "beta";
+var buildNumber =
+    HasArgument("BuildNumber") ? Argument<int>("BuildNumber") :
+    AppVeyor.IsRunningOnAppVeyor ? AppVeyor.Environment.Build.Number :
+    TravisCI.IsRunningOnTravisCI ? TravisCI.Environment.Build.BuildNumber :
+    EnvironmentVariable("BuildNumber") != null ? int.Parse(EnvironmentVariable("BuildNumber")) :
+    0;
 
-Information($"Running target {target} in configuration {configuration}");
+var artifactsDirectory = Directory("./artifacts");
+string versionSuffix = null;
+if (!string.IsNullOrEmpty(preReleaseSuffix))
+{
+    versionSuffix = preReleaseSuffix + "-" + buildNumber.ToString("D4");
+}
 
-var distDirectory = Directory("./dist");
-
-// Deletes the contents of the Artifacts folder if it contains anything from a previous build.
 Task("Clean")
     .Does(() =>
     {
-        CleanDirectory(distDirectory);
+        CleanDirectory(artifactsDirectory);
+        DeleteDirectories(GetDirectories("**/bin"), new DeleteDirectorySettings {
+			Recursive = true,
+			Force = true
+		});
+        DeleteDirectories(GetDirectories("**/obj"), new DeleteDirectorySettings {
+			Recursive = true,
+			Force = true
+		});
     });
 
-// Run dotnet restore to restore all package references.
 Task("Restore")
+    .IsDependentOn("Clean")
     .Does(() =>
     {
         DotNetCoreRestore();
     });
 
-// Build using the build configuration specified as an argument.
  Task("Build")
+    .IsDependentOn("Restore")
     .Does(() =>
     {
-        DotNetCoreBuild(".",
+        DotNetCoreBuild(
+            ".",
             new DotNetCoreBuildSettings()
             {
                 Configuration = configuration,
-                ArgumentCustomization = args => args.Append("--no-restore"),
+                VersionSuffix = versionSuffix
             });
     });
 
-// Look under a 'Tests' folder and run dotnet test against all of those projects.
-// Then drop the XML test results file in the Artifacts folder at the root.
 Task("Test")
+    .IsDependentOn("Build")
     .Does(() =>
     {
-        var projects = GetFiles("./test/*.csproj");
-        foreach(var project in projects)
+        foreach(var project in GetFiles("./test/**/*Tests.csproj"))
         {
-            Information("Testing project " + project);
-            DotNetCoreTest(
-                project.ToString(),
-                new DotNetCoreTestSettings()
-                {
-                    Configuration = configuration,
-                    NoBuild = true,
-                    ArgumentCustomization = args => args.Append("--no-restore"),
-                });
+            var outputFilePath = MakeAbsolute(artifactsDirectory.Path)
+                .CombineWithFilePath(project.GetFilenameWithoutExtension());
+            DotNetCoreTool(
+                project,
+                "xunit",
+                new ProcessArgumentBuilder()
+                    .AppendSwitch("-configuration", configuration)
+                    .AppendSwitchQuoted("-xml", outputFilePath.AppendExtension(".xml").ToString())
+                    .AppendSwitchQuoted("-html", outputFilePath.AppendExtension(".html").ToString()));
         }
     });
 
-// Publish the app to the /dist folder
-Task("Publish")
+Task("Pack")
+    .IsDependentOn("Test")
     .Does(() =>
     {
-        DotNetCorePublish(
-            "./src/kedzior.io.ConnectionStringConverter.csproj",
-            new DotNetCorePublishSettings()
+        DotNetCorePack(
+            ".",
+            new DotNetCorePackSettings()
             {
                 Configuration = configuration,
-                OutputDirectory = distDirectory,
-                ArgumentCustomization = args => args.Append("--no-restore"),
+                OutputDirectory = artifactsDirectory,
+                VersionSuffix = versionSuffix
             });
     });
 
-// A meta-task that runs all the steps to Build and Test the app
-Task("BuildAndTest")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Test");
-
-// The default task to run if none is explicitly specified. In this case, we want
-// to run everything starting from Clean, all the way up to Publish.
 Task("Default")
-    .IsDependentOn("BuildAndTest")
-    .IsDependentOn("Publish");
+    .IsDependentOn("Pack");
 
-// Executes the task specified in the target argument.
 RunTarget(target);

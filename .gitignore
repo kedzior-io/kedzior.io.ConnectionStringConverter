@@ -307,4 +307,4 @@ fabric.properties
 
 #Build
 tools
-dist
+artifacts
