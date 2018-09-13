@@ -11,6 +11,8 @@ nuget:
   disable_publish_on_pr: true
 environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
+before_build:
+- sh: chmod +x build.sh
 build_script:  
 - ps: .\build.ps1
 - sh: ./build.sh
