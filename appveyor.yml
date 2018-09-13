@@ -33,3 +33,10 @@ for:
       secure: tOQ2rz+MUX9sYoE/eJC6jlVNgj9qTNahGVvLYAVMX+si9Hr4/0IzCHEKWvtNMtli
     on:
       branch: master
+  - provider: NuGet
+    name: production
+    skip_symbols: true
+    api_key:
+      secure: f9Pgu+XO0YP/qJI9V+6Ylv+WqMZSutfo99gmXkK6PS0S+ZpD7H5wV/WKcrVezxti
+    on:
+      appveyor_repo_tag: true
